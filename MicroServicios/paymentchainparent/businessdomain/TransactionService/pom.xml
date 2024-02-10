@@ -2,19 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+        
     <parent>
         <groupId>com.paymentchain.businessdomain</groupId>
         <artifactId>businessdomain</artifactId>
-        <version>1</version>
+        <version>1</version><!-- Indicamos que el parent es businessdomain -->
     </parent>
-    
+        
     <groupId>com.paymentchain</groupId>
-    <artifactId>ProductService</artifactId>
+    <artifactId>TransactionService</artifactId>
     <version>1</version>
-    <name>ProductService</name>
+    <name>TransactionService</name>
     <description>Demo project for Spring Boot</description>
-	
+
     <build>
         <plugins>
             <plugin>
@@ -23,4 +23,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

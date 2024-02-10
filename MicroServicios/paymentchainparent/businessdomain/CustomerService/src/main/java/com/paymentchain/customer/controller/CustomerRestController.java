@@ -36,6 +36,9 @@ import reactor.netty.http.client.HttpClient;
 @RequestMapping("/api/")
 public class CustomerRestController {
 
+    //Variables estaticas
+    private final static String URL_PRODUCT = "http://localhost:8083/api/product";
+
     //Inyectamos por Constructor
     private ICustomerService customerRepository;
 
@@ -64,7 +67,7 @@ public class CustomerRestController {
     }
 
     @GetMapping("customer/{id}")
-    public ResponseEntity<?> get(@PathVariable int id) {
+    public ResponseEntity<?> get(@PathVariable(name = "id") int id) {
 
         Map<String, Object> response = new HashMap<String, Object>();
         Customer customer = customerRepository.findById(id);
@@ -87,7 +90,7 @@ public class CustomerRestController {
     }
 
     @PutMapping("customer/{id}")
-    public ResponseEntity<?> put(@PathVariable int id, @RequestBody Customer customer) {
+    public ResponseEntity<?> put(@PathVariable(name = "id") int id, @RequestBody Customer customer) {
         //Capturamos el antiguo Customer
         Customer oldCustomer = customerRepository.findById(id);
         oldCustomer.setNombre(customer.getNombre());
@@ -128,7 +131,7 @@ public class CustomerRestController {
     }
 
     @DeleteMapping("customer/{id}")
-    public ResponseEntity<?> delete(@PathVariable int id) {
+    public ResponseEntity<?> delete(@PathVariable(name = "id") int id) {
         Map<String, Object> response = new HashMap<String, Object>();
 
         Customer customer = customerRepository.findById(id);
@@ -150,8 +153,8 @@ public class CustomerRestController {
         }
     }
 
-    @GetMapping("full")
-    public Customer getFullDataByCode(@RequestParam String code) {
+    @GetMapping("customer/full")
+    public Customer getFullDataByCode(@RequestParam(name = "code") String code) {
         Customer customer = customerRepository.findByCode(code);
         customer.getProduct().forEach(product -> {
             String nombreProducto = getProductNameById(product.getProductId());
@@ -162,19 +165,16 @@ public class CustomerRestController {
 
     //Creamos método para obtener el nombre de los productos mediante el microservicio de Product
     public String getProductNameById(Integer id) {
-
         //Creamos el WebClient para realizar la peticion
         WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
-                .baseUrl("http://localhost/8083/api/product")
+                .baseUrl(URL_PRODUCT)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .defaultUriVariables(Collections.singletonMap("url", "http://localhost/8083/api/product"))
+                .defaultUriVariables(Collections.singletonMap("url", URL_PRODUCT))
                 .build();
-
         //Obtenemos el dato 
         JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
                 .retrieve().bodyToMono(JsonNode.class).block();
-
-        return block.get("name").asText();
+        return block.get("product").get("name").asText();
     }
 
 }

@@ -34,7 +34,7 @@ public class ProductRestController {
     }
 
     @GetMapping("product/{id}")
-    public ResponseEntity<?> getById(@PathVariable Integer id) {
+    public ResponseEntity<?> getById(@PathVariable(name = "id") Integer id) {
 
         Map<String, Object> response = new HashMap<String, Object>();
         Product product = productService.findById(id);
@@ -56,7 +56,7 @@ public class ProductRestController {
     }
 
     @PutMapping("product/{id}")
-    public ResponseEntity<?> editProduct(@PathVariable Integer id, @RequestBody Product product) {
+    public ResponseEntity<?> editProduct(@PathVariable(name = "id") Integer id, @RequestBody Product product) {
         //Capturamos el antiguo Product
         Product oldProduct = productService.findById(id);
         oldProduct.setCode(product.getCode());
@@ -96,7 +96,7 @@ public class ProductRestController {
     }
 
     @DeleteMapping("product/{id}")
-    public ResponseEntity<?> deleteProduct(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteProduct(@PathVariable(name = "id") Integer id) {
         Map<String, Object> response = new HashMap<String, Object>();
 
         Product product = productService.findById(id);

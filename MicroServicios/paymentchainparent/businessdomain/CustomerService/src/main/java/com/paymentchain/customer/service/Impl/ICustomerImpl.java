@@ -8,28 +8,28 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ICustomerImpl implements ICustomerService {
-    
+
     private final CustomerRepository customerRepository;
-    
+
     public ICustomerImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
-    
+
     @Override
     public List<Customer> findAll() {
         return customerRepository.findAll();
     }
-    
+
     @Override
     public Customer findById(Integer id) {
         return customerRepository.findById(id).orElse(null);
     }
-    
+
     @Override
     public Customer save(Customer customer) {
         return customerRepository.save(customer);
     }
-    
+
     @Override
     public void delete(Customer customer) {
         customerRepository.delete(customer);
@@ -37,12 +37,12 @@ public class ICustomerImpl implements ICustomerService {
 
     @Override
     public Customer findByCode(String code) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return customerRepository.findByCode(code);
     }
 
     @Override
     public Customer findByIban(String iban) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return customerRepository.findByIban(iban);
     }
-    
+
 }

@@ -16,6 +16,7 @@
     <modules>
         <module>CustomerService</module>
         <module>ProductService</module>
+        <module>TransactionService</module>
     </modules>
     
     <properties>
