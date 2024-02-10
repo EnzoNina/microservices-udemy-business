@@ -23,27 +23,30 @@ public class Customer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id_customer")
     private Integer id;
 
-    @Column(name = "nombre")
+    @Column(name = "code_customer")
+    private String code;
+
+    @Column(name = "nombre_customer")
     private String nombre;
 
-    @Column(name = "surnames")
+    @Column(name = "surnames_customer")
     private String surnames;
 
-    @Column(name = "phone")
+    @Column(name = "phone_customer")
     private String phone;
-    
-    @Column(name = "address")
+
+    @Column(name = "address_customer")
     private String address;
-    
-    @Column(name = "iban")
+
+    @Column(name = "iban_customer")
     private String Iban;
-    
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "customer",cascade = CascadeType.ALL,orphanRemoval = true)
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerProduct> product;
-    
+
     //Transient indica que este dato no se guardara en la base de datos
     @Transient
     private List<?> transctions;

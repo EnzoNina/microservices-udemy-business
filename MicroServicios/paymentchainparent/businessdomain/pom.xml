@@ -19,9 +19,9 @@
     </modules>
     
     <properties>
-        <spring-cloud-dependencies.version>2021.0.4</spring-cloud-dependencies.version>  
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>   
-        <org.lombo.version>1.18.30</org.lombo.version>     
+        <spring-cloud-dependencies.version>2021.0.4</spring-cloud-dependencies.version>
+        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+        <org.lombo.version>1.18.30</org.lombo.version>
     </properties>
     
     <dependencyManagement>
@@ -36,9 +36,8 @@
         </dependencies>
     </dependencyManagement>
     
-    <dependencies>
-        
-       <!-- <dependency>
+    <dependencies>        
+        <!-- <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
         </dependency>  
@@ -49,6 +48,11 @@
         </dependency>-->
         
         <!-- manage all realate to links on REST resources--> 
+                
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>     
@@ -65,7 +69,7 @@
             <scope>runtime</scope>
         </dependency> 
         
-          <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>   

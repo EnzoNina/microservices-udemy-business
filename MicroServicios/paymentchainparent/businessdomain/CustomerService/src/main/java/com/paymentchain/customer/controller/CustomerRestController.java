@@ -1,5 +1,6 @@
 package com.paymentchain.customer.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -11,22 +12,51 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import com.paymentchain.customer.entities.Customer;
-import com.paymentchain.customer.repository.CustomerRepository;
+import com.paymentchain.customer.service.IService.ICustomerService;
+import io.netty.channel.ChannelOption;
+import io.netty.handler.timeout.ReadTimeoutHandler;
+import io.netty.handler.timeout.WriteTimeoutHandler;
+import java.time.Duration;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import reactor.netty.http.client.HttpClient;
 
 @RestController
 @RequestMapping("/api/")
 public class CustomerRestController {
 
     //Inyectamos por Constructor
-    private CustomerRepository customerRepository;
+    private ICustomerService customerRepository;
 
-    public CustomerRestController(CustomerRepository customerRepository) {
+    private final WebClient.Builder webClientBuilder;
+
+    public CustomerRestController(ICustomerService customerRepository, WebClient.Builder webClientBuilder) {
         this.customerRepository = customerRepository;
+        this.webClientBuilder = webClientBuilder;
     }
+
+    //Creamos objeto de HttpClient ya que webClient requiere este objeto
+    HttpClient client = HttpClient.create()
+            .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
+            .option(ChannelOption.SO_KEEPALIVE, true)
+            .option(ChannelOption.SO_TIMEOUT, 300)
+            .option(ChannelOption.SO_SNDBUF, 60)
+            .responseTimeout(Duration.ofSeconds(1))
+            .doOnConnected(connection -> {
+                connection.addHandlerFirst(new ReadTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+                connection.addHandlerFirst(new WriteTimeoutHandler(5000, TimeUnit.MILLISECONDS));
+            });
 
     @GetMapping("customer")
     public List<Customer> list() {
@@ -37,7 +67,7 @@ public class CustomerRestController {
     public ResponseEntity<?> get(@PathVariable int id) {
 
         Map<String, Object> response = new HashMap<String, Object>();
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerRepository.findById(id);
         try {
             if (customer != null) {
                 response.put("message", "El Customer fue encontrado con éxito");
@@ -59,7 +89,7 @@ public class CustomerRestController {
     @PutMapping("customer/{id}")
     public ResponseEntity<?> put(@PathVariable int id, @RequestBody Customer customer) {
         //Capturamos el antiguo Customer
-        Customer oldCustomer = customerRepository.findById(id).orElse(null);
+        Customer oldCustomer = customerRepository.findById(id);
         oldCustomer.setNombre(customer.getNombre());
         oldCustomer.setPhone(customer.getPhone());
         Map<String, Object> response = new HashMap<String, Object>();
@@ -85,6 +115,7 @@ public class CustomerRestController {
     public ResponseEntity<?> post(@RequestBody Customer customer) {
         Map<String, Object> response = new HashMap<String, Object>();
         try {
+            customer.getProduct().forEach(product -> product.setCustomer(customer));
             Customer customerCreated = customerRepository.save(customer);
             response.put("Message", "El cliente fue creado con éxito!");
             response.put("Customer", customerCreated);
@@ -100,7 +131,7 @@ public class CustomerRestController {
     public ResponseEntity<?> delete(@PathVariable int id) {
         Map<String, Object> response = new HashMap<String, Object>();
 
-        Customer customer = customerRepository.findById(id).orElse(null);
+        Customer customer = customerRepository.findById(id);
         try {
             if (customer != null) {
                 customerRepository.delete(customer);
@@ -117,6 +148,33 @@ public class CustomerRestController {
             response.put("Message", "Hubo un error al acceder a la base de datos: " + e.getLocalizedMessage());
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("full")
+    public Customer getFullDataByCode(@RequestParam String code) {
+        Customer customer = customerRepository.findByCode(code);
+        customer.getProduct().forEach(product -> {
+            String nombreProducto = getProductNameById(product.getProductId());
+            product.setProductName(nombreProducto);
+        });
+        return customer;
+    }
+
+    //Creamos método para obtener el nombre de los productos mediante el microservicio de Product
+    public String getProductNameById(Integer id) {
+
+        //Creamos el WebClient para realizar la peticion
+        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+                .baseUrl("http://localhost/8083/api/product")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", "http://localhost/8083/api/product"))
+                .build();
+
+        //Obtenemos el dato 
+        JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
+                .retrieve().bodyToMono(JsonNode.class).block();
+
+        return block.get("name").asText();
     }
 
 }

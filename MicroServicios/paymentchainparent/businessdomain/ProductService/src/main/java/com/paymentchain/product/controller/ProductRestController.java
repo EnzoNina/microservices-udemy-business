@@ -53,7 +53,6 @@ public class ProductRestController {
             response.put("Message", "Hubo un error al acceder a la base de datos: " + e.getLocalizedMessage());
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @PutMapping("product/{id}")
