@@ -38,6 +38,7 @@ public class CustomerRestController {
 
     //Variables estaticas
     private final static String URL_PRODUCT = "http://localhost:8083/api/product";
+    private final static String URL_TRANSACTION = "http://localhost:8082/api/transaction";
 
     //Inyectamos por Constructor
     private ICustomerService customerRepository;
@@ -155,11 +156,22 @@ public class CustomerRestController {
 
     @GetMapping("customer/full")
     public Customer getFullDataByCode(@RequestParam(name = "code") String code) {
-        Customer customer = customerRepository.findByCode(code);
-        customer.getProduct().forEach(product -> {
-            String nombreProducto = getProductNameById(product.getProductId());
-            product.setProductName(nombreProducto);
-        });
+        Customer customer = null;
+        try {
+            //Obtenemos customer 
+            customer = customerRepository.findByCode(code);
+            //Establecemos los nombres de los productos obtenidos por el servicio Product
+            customer.getProduct().forEach(product -> {
+                String nombreProducto = getProductNameById(product.getProductId());
+                product.setProductName(nombreProducto);
+            });
+            //Obtenemos las transacciones del servicio Transaction
+            List<?> lstTransactions = getTransactionsByAcoountIban(customer.getIban());
+            customer.setTransactions(lstTransactions);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         return customer;
     }
 
@@ -175,6 +187,35 @@ public class CustomerRestController {
         JsonNode block = build.method(HttpMethod.GET).uri("/" + id)
                 .retrieve().bodyToMono(JsonNode.class).block();
         return block.get("product").get("name").asText();
+    }
+
+    public List<?> getTransactionsByAcoountIban(String ibanAcount) {
+        //Creamos el WebClient para realizar la peticion
+        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+                .baseUrl(URL_TRANSACTION)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", URL_TRANSACTION))
+                .build();
+
+        List<?> transactions = build.method(HttpMethod.GET).uri(uri -> uri
+                .path("/customer/transactions")
+                .queryParam("iban", ibanAcount)
+                .build())
+                .retrieve().bodyToFlux(Object.class).collectList().block();
+
+        return transactions;
+    }
+
+    public Double getAmountTotalByIbanAccount(String ibanAcount) {
+        //Creamos el WebClient para realizar la peticion
+        WebClient build = webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
+                .baseUrl(URL_TRANSACTION)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .defaultUriVariables(Collections.singletonMap("url", URL_TRANSACTION))
+                .build();
+        JsonNode block = build.method(HttpMethod.GET).uri("/amount/" + ibanAcount)
+                .retrieve().bodyToMono(JsonNode.class).block();
+        return block.asDouble();
     }
 
 }

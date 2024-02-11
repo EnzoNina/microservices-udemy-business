@@ -49,6 +49,6 @@ public class Customer implements Serializable {
 
     //Transient indica que este dato no se guardara en la base de datos
     @Transient
-    private List<?> transctions;
+    private List<?> transactions;
 
 }

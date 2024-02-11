@@ -1,9 +1,12 @@
 package com.paymentchain.TransactionService.Entity;
 
-public record Channel(String channel) {
+public class Channel {
 
-    private static final Channel WEB = new Channel("WEB");
-    private static final Channel CAJERO = new Channel("CAJERO");
-    private static final Channel OFICINA = new Channel("OFICINA");
+    public static final String WEB = "WEB";
+    public static final String CAJERO = "CAJERO";
+    public static final String OFICINA = "OFICINA";
+
+    public Channel() {
+    }
 
 }

@@ -1,10 +1,13 @@
 package com.paymentchain.TransactionService.Entity;
 
-public record Status(String estado) {
+public class Status {
 
-    public static final Status PENDIENTE = new Status("PENDIENTE");
-    public static final Status LIQUIDADO = new Status("LIQUIDADO");
-    public static final Status RECHAZADA = new Status("RECHAZADA");
-    public static final Status CANCELADA = new Status("CANCELADA");
+    public static final String PENDIENTE = "PENDIENTE";
+    public static final String LIQUIDADO = "LIQUIDADO";
+    public static final String RECHAZADA = "RECHAZADA";
+    public static final String CANCELADA = "CANCELADA";
+
+    public Status() {
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.paymentchain.TransactionService.Service.Impl;
 
+import com.paymentchain.TransactionService.Entity.DTO.IbanAmountDTO;
 import com.paymentchain.TransactionService.Entity.Status;
 import com.paymentchain.TransactionService.Entity.Transaction;
 import com.paymentchain.TransactionService.Repository.TransactionRepository;
@@ -35,9 +36,12 @@ public class ITransactionServiceImpl implements ITransactionService {
             Double newAmout = (transaction.getAmount() - transaction.getFee());
             transaction.setAmount(newAmout);
         }
-        if (transaction.getDate().after(new Date())) {
+        //Fechas
+        // Establecimiento del estado de la transacción
+        Date currentDate = new Date();
+        if (transaction.getDate().after(currentDate)) {
             transaction.setStatus(Status.PENDIENTE);
-        } else if (transaction.getDate().equals(new Date()) || transaction.getDate().before(new Date())) {
+        } else {
             transaction.setStatus(Status.LIQUIDADO);
         }
 
@@ -62,6 +66,21 @@ public class ITransactionServiceImpl implements ITransactionService {
     @Override
     public Transaction findById(Integer id) {
         return transactionRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Double getAmountByAccountIban(String accountIban) {
+        return transactionRepository.getAmountByAccountIban(accountIban);
+    }
+
+    @Override
+    public List<IbanAmountDTO> getAmountTotalByAccountIban() {
+        return transactionRepository.getAmountTotalGroupByAccountIban();
+    }
+
+    @Override
+    public List<Transaction> getTransactionByAccountIban(String accountIban) {
+        return transactionRepository.getTransactionByAccountIban(accountIban);
     }
 
 }

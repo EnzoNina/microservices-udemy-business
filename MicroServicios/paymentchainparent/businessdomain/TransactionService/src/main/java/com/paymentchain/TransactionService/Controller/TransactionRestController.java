@@ -1,5 +1,6 @@
 package com.paymentchain.TransactionService.Controller;
 
+import com.paymentchain.TransactionService.Entity.DTO.IbanAmountDTO;
 import com.paymentchain.TransactionService.Entity.Transaction;
 import com.paymentchain.TransactionService.Service.IService.ITransactionService;
 import java.util.HashMap;
@@ -9,15 +10,13 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/")
@@ -30,8 +29,13 @@ public class TransactionRestController {
     }
 
     @GetMapping("transaction")
-    public List<Transaction> list() {
-        return transcationService.findAll();
+    public ResponseEntity<?> list() {
+        Map<String, Object> response = new HashMap<>();
+        List<Transaction> lstTransaction = transcationService.findAll();
+        List<IbanAmountDTO> lstIbanAmountDTO = transcationService.getAmountTotalByAccountIban();
+        response.put("Transacciones", lstTransaction);
+        response.put("Montos por Iban", lstIbanAmountDTO);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("transaction/{id}")
@@ -53,6 +57,12 @@ public class TransactionRestController {
             response.put("Error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("transaction/customer/transactions")
+    public List<?> getAllByAccountIban(@RequestParam(name = "iban") String iban) {
+        List<Transaction> lstTransactions = transcationService.getTransactionByAccountIban(iban);
+        return lstTransactions;
     }
 
     @PutMapping("transaction/{id}")
@@ -94,6 +104,11 @@ public class TransactionRestController {
         }
 
         return null;
+    }
+
+    @GetMapping("transaction/amount/{iban}")
+    public Double getTotalAmountByIbanAccount(@PathVariable(name = "iban") String iban) {
+        return transcationService.getAmountByAccountIban(iban);
     }
 
 }
