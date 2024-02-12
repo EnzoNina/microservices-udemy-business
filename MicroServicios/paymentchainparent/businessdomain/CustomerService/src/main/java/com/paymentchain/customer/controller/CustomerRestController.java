@@ -37,8 +37,8 @@ import reactor.netty.http.client.HttpClient;
 public class CustomerRestController {
 
     //Variables estaticas
-    private final static String URL_PRODUCT = "http://localhost:8083/api/product";
-    private final static String URL_TRANSACTION = "http://localhost:8082/api/transaction";
+    private final static String URL_PRODUCT = "http://businessdomain-product/api/product";
+    private final static String URL_TRANSACTION = "http://businessdomain-transaction/api/transaction";
 
     //Inyectamos por Constructor
     private ICustomerService customerRepository;
