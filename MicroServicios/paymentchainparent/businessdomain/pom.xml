@@ -20,7 +20,7 @@
     </modules>
     
     <properties>
-        <spring-cloud-dependencies.version>2021.0.4</spring-cloud-dependencies.version>
+        <spring-cloud-dependencies.version>2023.0.0</spring-cloud-dependencies.version>
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.lombo.version>1.18.30</org.lombo.version>
     </properties>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>  
+        </dependency>
         
         <!--
          <dependency>

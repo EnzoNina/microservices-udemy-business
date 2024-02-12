@@ -32,9 +32,7 @@ public class TransactionRestController {
     public ResponseEntity<?> list() {
         Map<String, Object> response = new HashMap<>();
         List<Transaction> lstTransaction = transcationService.findAll();
-        List<IbanAmountDTO> lstIbanAmountDTO = transcationService.getAmountTotalByAccountIban();
         response.put("Transacciones", lstTransaction);
-        response.put("Montos por Iban", lstIbanAmountDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

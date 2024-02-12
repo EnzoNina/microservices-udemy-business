@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,14 +42,11 @@ public class CustomerRestController {
     private final static String URL_TRANSACTION = "http://businessdomain-transaction/api/transaction";
 
     //Inyectamos por Constructor
+    @Autowired
     private ICustomerService customerRepository;
 
-    private final WebClient.Builder webClientBuilder;
-
-    public CustomerRestController(ICustomerService customerRepository, WebClient.Builder webClientBuilder) {
-        this.customerRepository = customerRepository;
-        this.webClientBuilder = webClientBuilder;
-    }
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     //Creamos objeto de HttpClient ya que webClient requiere este objeto
     HttpClient client = HttpClient.create()
