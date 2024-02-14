@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +29,12 @@ public class ProductRestController {
         this.productService = productService;
     }
 
+    @Value("${user.alias}")
+    private String alias;
+
     @GetMapping("product")
     public List<Product> listAll() {
+        System.out.println("user " + alias);
         return productService.findAll();
     }
 

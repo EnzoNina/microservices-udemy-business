@@ -10,10 +10,17 @@
     </parent>
     
     <groupId>com.paymentchain</groupId>
-    <artifactId>ProductService</artifactId>
+    <artifactId>productservice</artifactId>
     <version>1</version>
     <name>ProductService</name>
     <description>Demo project for Spring Boot</description>
+    
+    <dependencies>  
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>            
+        </dependency>
+    </dependencies>
 	
     <build>
         <plugins>

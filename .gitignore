@@ -1,1 +1,6 @@
 /MicroServicios/paymentchainparent/businessdomain/ProductService/target/
+/MicroServicios/paymentchainparent/businessdomain/CustomerService/target/
+/MicroServicios/paymentchainparent/businessdomain/TransactionService/target/
+/MicroServicios/paymentchainparent/infraestructuredomain/configServer/target/
+/MicroServicios/paymentchainparent/infraestructuredomain/eurekaServer/target/
+/MicroServicios/paymentchainparent/infraestructuredomain/serverAdmin/target/

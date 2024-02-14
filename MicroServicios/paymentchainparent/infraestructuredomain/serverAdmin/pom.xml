@@ -10,7 +10,7 @@
     </parent>
         
     <groupId>com.paymentchain</groupId>
-    <artifactId>adminServer</artifactId>
+    <artifactId>adminserver</artifactId>
     <version>1</version>
     <name>adminServer</name>
     <description>Demo project for Spring Boot</description>
