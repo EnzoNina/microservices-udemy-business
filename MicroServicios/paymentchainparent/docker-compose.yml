@@ -28,6 +28,9 @@ services:
          -Xms256M 
          -Xmx256M
          -DEUREKA_SERVER=http://registry-discovery:8761/eureka/         
+         -DSPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/EnzoNina/git-remote-config.git
+         -DSPRING_SECURITY_USER_NAME=admin
+         -DSPRING_SECURITY_USER_PASSWORD=admin         
          #-Dspring.cloud.config.server.native.searchLocations=/var/config-data
     depends_on:
       - registry-discovery
@@ -110,26 +113,22 @@ services:
   ##########################################################################
   mysql_db:
     container_name: mysql
-    image: mysql:latest
+    image: mysql:latest    
+    restart: always
     ports:
       - 3306:3306
     volumes:
       - ./dbfiles:/docker-entrypoint-initdb.d
       - /var/lib/mysql_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: customer_service      
-
+      MYSQL_ROOT_PASSWORD: admin      
   ##########################################################################
   # PhpMyAdmin service
   ##########################################################################
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+  adminer:
+    image: adminer
     restart: always
-    environment:
-      PMA_ARBITRARY: 1
-      MYSQL_ROOT_PASSWORD: admin
     ports:
-      - 8080:80
+      - 8080:8080
     depends_on:
       - mysql_db

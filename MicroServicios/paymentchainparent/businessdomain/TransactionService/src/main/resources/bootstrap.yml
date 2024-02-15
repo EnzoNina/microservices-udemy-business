@@ -18,7 +18,7 @@ spring:
             discovery:
                 enabled: true
                 service-id: config-server
-            fail-fast: false
+            fail-fast: true
             #name of base properties config file, before profile
             name: config-client
             profile: transaction
