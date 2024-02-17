@@ -11,6 +11,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
     @Query("SELECT t FROM Transaction t where t.accountIban =?1")
     Transaction findByAccountIban(String accountIban);
 
+    //Obtener saldo de una cuenta
     @Query("SELECT SUM(t.amount) FROM Transaction t where t.accountIban =?1")
     Double getAmountByAccountIban(String accountIban);
 

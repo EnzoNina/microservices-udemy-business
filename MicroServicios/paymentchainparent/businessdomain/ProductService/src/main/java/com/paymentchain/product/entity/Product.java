@@ -18,10 +18,10 @@ public class Product {
     @Column(name = "id_product", nullable = false)
     private Integer id;
 
-    @Column(name = "code_product", nullable = false, length = 10)
+    @Column(name = "code_product", length = 10)
     private String code;
 
-    @Column(name = "name_product", nullable = false, length = 50)
+    @Column(name = "name_product", length = 50)
     private String name;
 
 }

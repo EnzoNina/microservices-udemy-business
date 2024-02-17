@@ -1,8 +1,9 @@
 package com.paymentchain.TransactionService.Controller;
 
-import com.paymentchain.TransactionService.Entity.DTO.IbanAmountDTO;
 import com.paymentchain.TransactionService.Entity.Transaction;
 import com.paymentchain.TransactionService.Service.IService.ITransactionService;
+import com.paymentchain.TransactionService.business.TransactionBusiness;
+import com.paymentchain.TransactionService.exception.BusinessRuleException;
 import java.util.HashMap;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,91 +23,80 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/api/")
 public class TransactionRestController {
 
-    private final ITransactionService transcationService;
+          private final ITransactionService transactionService;
 
-    public TransactionRestController(ITransactionService transcationService) {
-        this.transcationService = transcationService;
-    }
+          private TransactionBusiness tb;
 
-    @GetMapping("transaction")
-    public ResponseEntity<?> list() {
-        Map<String, Object> response = new HashMap<>();
-        List<Transaction> lstTransaction = transcationService.findAll();
-        response.put("Transacciones", lstTransaction);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+          public TransactionRestController(ITransactionService transcationService, TransactionBusiness tb) {
+                    this.transactionService = transcationService;
+                    this.tb = tb;
+          }
 
-    @GetMapping("transaction/{id}")
-    public ResponseEntity<?> getById(@PathVariable(name = "id") Integer id) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            Transaction transaction = transcationService.findById(id);
-            if (transaction != null) {
-                response.put("Message", "La transacción se encontro con éxito");
-                response.put("transaction", transaction);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                response.put("Message", "No se pudo encontrar la transaction");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
+          @GetMapping("transaction")
+          public ResponseEntity<?> list() {
+                    Map<String, Object> response = new HashMap<>();
+                    List<Transaction> lstTransaction = transactionService.findAll();
+                    response.put("Transacciones", lstTransaction);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+          }
 
-        } catch (DataAccessException e) {
-            response.put("Message", "Hubo un error");
-            response.put("Error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
+          @GetMapping("transaction/{id}")
+          public ResponseEntity<?> getById(@PathVariable(name = "id") Integer id) {
+                    Map<String, Object> response = new HashMap<>();
+                    try {
+                              Transaction transaction = transactionService.findById(id);
+                              if (transaction != null) {
+                                        response.put("Message", "La transacción se encontro con éxito");
+                                        response.put("transaction", transaction);
+                                        return new ResponseEntity<>(response, HttpStatus.OK);
+                              } else {
+                                        response.put("Message", "No se pudo encontrar la transaction");
+                                        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                              }
 
-    @GetMapping("transaction/customer/transactions")
-    public List<?> getAllByAccountIban(@RequestParam(name = "iban") String iban) {
-        List<Transaction> lstTransactions = transcationService.getTransactionByAccountIban(iban);
-        return lstTransactions;
-    }
+                    } catch (DataAccessException e) {
+                              response.put("Message", "Hubo un error");
+                              response.put("Error", e.getMessage());
+                              return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                    }
+          }
 
-    @PutMapping("transaction/{id}")
-    public ResponseEntity<?> put(@PathVariable(name = "id") Integer id, @RequestBody Transaction newTransaction) {
-        Map<String, Object> response = new HashMap<>();
-        try {
-            if (id != null) {
-                response.put("Message", "La transacción se actualizó con éxito");
-                Transaction transaction = transcationService.update(id, newTransaction);
-                response.put("transaction", transaction);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                response.put("Message", "No se pudo encontrar la transaction");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
+          @GetMapping("transaction/customer/transactions")
+          public List<?> getAllByAccountIban(@RequestParam(name = "iban") String iban) {
+                    List<Transaction> lstTransactions = transactionService.getTransactionByAccountIban(iban);
+                    return lstTransactions;
+          }
 
-        } catch (DataAccessException e) {
-            response.put("Message", "Hubo un error");
-            response.put("Error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
-    }
+          @PutMapping("transaction/{id}")
+          public ResponseEntity<?> put(@PathVariable(name = "id") Integer id, @RequestBody Transaction newTransaction) {
+                    Map<String, Object> response = new HashMap<>();
+                    try {
+                              if (id != null) {
+                                        response.put("Message", "La transacción se actualizó con éxito");
+                                        Transaction transaction = transactionService.update(id, newTransaction);
+                                        response.put("transaction", transaction);
+                                        return new ResponseEntity<>(response, HttpStatus.OK);
+                              } else {
+                                        response.put("Message", "No se pudo encontrar la transaction");
+                                        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                              }
 
-    @PostMapping("transaction")
-    public ResponseEntity<?> post(@RequestBody Transaction input) {
-        Map<String, Object> response = new HashMap<>();
+                    } catch (DataAccessException e) {
+                              response.put("Message", "Hubo un error");
+                              response.put("Error", e.getMessage());
+                              return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+                    }
+          }
 
-        try {
-            Transaction transaction = transcationService.save(input);
-            if (transaction != null) {
-                response.put("Message", "La transacción se creo con éxito");
-                response.put("transaction", transaction);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-        } catch (DataAccessException e) {
-            response.put("Message", "Hubo un error");
-            response.put("Error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-        }
+          @PostMapping("transaction")
+          public ResponseEntity<?> post(@RequestBody Transaction input) throws BusinessRuleException {
+                    Transaction transaction = tb.save(input);
+                    return new ResponseEntity<>(transaction, HttpStatus.CREATED);
+          }
 
-        return null;
-    }
-
-    @GetMapping("transaction/amount/{iban}")
-    public Double getTotalAmountByIbanAccount(@PathVariable(name = "iban") String iban) {
-        return transcationService.getAmountByAccountIban(iban);
-    }
+          @GetMapping("transaction/amount/{iban}")
+          public Double getTotalAmountByIbanAccount(@PathVariable(name = "iban") String iban) {
+                    return transactionService.getAmountByAccountIban(iban);
+          }
 
 }

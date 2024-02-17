@@ -1,6 +1,8 @@
 package com.paymentchain.product.controller;
 
+import com.paymentchain.product.business.transaction.ProductTransaction;
 import com.paymentchain.product.entity.Product;
+import com.paymentchain.product.exception.BusinessRuleException;
 import com.paymentchain.product.service.Iservice.IProductService;
 import java.util.HashMap;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +27,11 @@ public class ProductRestController {
     //Inyectamos por constructor
     private IProductService productService;
 
-    public ProductRestController(IProductService productService) {
+    private ProductTransaction pt;
+
+    public ProductRestController(IProductService productService, ProductTransaction pt) {
         this.productService = productService;
+        this.pt = pt;
     }
 
     @Value("${user.alias}")
@@ -86,18 +91,9 @@ public class ProductRestController {
     }
 
     @PostMapping("product")
-    public ResponseEntity<?> saveProduct(@RequestBody Product product) {
-        Map<String, Object> response = new HashMap<String, Object>();
-        try {
-            Product customerCreated = productService.save(product);
-            response.put("Message", "El Product fue creado con éxito!");
-            response.put("Product", customerCreated);
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
-        } catch (DataAccessException e) {
-            response.put("Error", e.getMessage().toString());
-            response.put("Message", "Hubo un error al acceder a la base de datos: " + e.getLocalizedMessage());
-            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> saveProduct(@RequestBody Product product) throws BusinessRuleException {
+        Product productCreated = pt.saveProduct(product);
+        return new ResponseEntity(productCreated, HttpStatus.CREATED);
     }
 
     @DeleteMapping("product/{id}")
