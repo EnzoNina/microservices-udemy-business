@@ -159,7 +159,7 @@
                             <additionalparam>${javadoc.opts}</additionalparam>
                         </configuration>
                     </execution>
-                </executions>
+                </executions>/home/xuls/programacion/microservices-udemy-business/MicroServicios/paymentchainparent/infraestructuredomain
             </plugin>-->
         </plugins>
     </build>

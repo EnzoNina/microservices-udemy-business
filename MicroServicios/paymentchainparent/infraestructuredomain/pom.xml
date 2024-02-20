@@ -16,6 +16,7 @@
         <module>eurekaServer</module>
         <module>serverAdmin</module>
         <module>configServer</module>
+        <module>apigateway</module>
     </modules>
     
     <properties>

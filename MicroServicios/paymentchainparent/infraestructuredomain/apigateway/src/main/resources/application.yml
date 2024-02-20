@@ -1,0 +1,51 @@
+## YAML Template.
+server:
+   port: 8080
+   
+spring:          
+  application:
+    name: apigateway
+  cloud:
+    gateway:
+      routes:
+        - id: businessdomain-customer
+          uri: lb://businessdomain-customer
+          predicates:
+            - Path=/api/customer/**
+        
+        - id: businessdomain-product
+          uri: lb://businessdomain-product
+          predicates:
+            - Path=/api/product/**
+        
+        - id: businessdomain-transaction
+          uri: lb://businessdomain-transaction 
+          predicates:
+            - Path=/api/transaction/**
+   
+--- #Configuration for eureka client        
+
+eureka:
+    instance:
+        leaseRenewalIntervalInSeconds: 10
+        health-check-url-path: /actuator/health
+        metadata-map:
+            startup: ${random.int} #needed to trigger info and endpoint update after restart
+    client:
+        registryFetchIntervalInSeconds: 5        
+        service-url: 
+            defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka}
+
+logging:
+  level:
+     org.springframework.cloud.gateway: DEBUG
+     reactor.netty.http.client: DEBUG
+
+management:     
+    endpoints:        
+        web:
+          exposure:
+            include: "*"  
+    endpoint:       
+        health:
+          show-details: ALWAYS

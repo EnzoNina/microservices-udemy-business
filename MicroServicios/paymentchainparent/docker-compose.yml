@@ -56,6 +56,24 @@ services:
       - 8762:8762
       
  ##########################################################################     
+ #apigateway service
+ ##########################################################################  
+  apigateway:
+    container_name: apigateway
+    image: digitalthinking/microservice_docker_apigateway:1
+      #All projets will have a variable value  DEUREKA_SERVER this tell where find a registry-discovery server 
+    environment:
+      - JAVA_OPTS=
+         -Xms256M 
+         -Xmx256M
+         -DEUREKA_SERVER=http://registry-discovery:8761/eureka/
+         #-Dspring.cloud.config.server.native.searchLocations=/var/config-data
+    depends_on:
+      - registry-discovery
+    ports:
+      - 8080:8080
+      
+ ##########################################################################     
  #product service
  ##########################################################################  
   product-catalog:
@@ -70,8 +88,7 @@ services:
     depends_on:
       - registry-discovery
       - configuration
-    ports:
-      - 8083:8083 
+  
       
  ##########################################################################     
  #customer service
@@ -88,8 +105,7 @@ services:
     depends_on:
       - registry-discovery
       - configuration
-    ports:
-      - 8081:8081
+    
       
  ##########################################################################     
  #transaction service
@@ -106,8 +122,7 @@ services:
     depends_on:
       - registry-discovery
       - configuration
-    ports:
-      - 8082:8082               
+                  
   ##########################################################################
   # Servicio de base de datos MySQL
   ##########################################################################
@@ -129,6 +144,6 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8090:8090
     depends_on:
       - mysql_db
